@@ -1,0 +1,23 @@
+{
+  "name": "aws-tools",
+  "version": "1.0.0",
+  "description": "## deploy.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lapp14/aws-tools.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lapp14/aws-tools/issues"
+  },
+  "homepage": "https://github.com/lapp14/aws-tools#readme",
+  "dependencies": {
+    "aws-sdk": "^2.796.0",
+    "glob": "^7.1.6"
+  }
+}
