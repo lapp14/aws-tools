@@ -99,6 +99,23 @@ const cloudfrontCacheInvalidation = async () => {
 };
 
 const deploy = async () => {
+    console.log(process)
+    
+    const args = process.argv.slice(2);
+
+    args.forEach(arg => {
+	keyValue = arg.split('=');
+
+	if 
+	switch (keyValue[0]) {
+
+	    case 'cloudfront
+
+            default:
+	        throw new Error(_usage());
+	}
+    });
+
 
     const cloudfrontDistributionId = process.argv[2];
     const s3Bucket = process.argv[3];
