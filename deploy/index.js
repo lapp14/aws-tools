@@ -19,7 +19,7 @@ const _walkSync = (dir, filelist = []) => {
             filelist = _walkSync(path.join(dir, file), filelist);
         } else {
             filelist.push(path.join(dir, file));
-	}
+        }
     });
     return filelist;
 };
@@ -42,9 +42,9 @@ const getAssets = async (path = '.') => {
                         destination: pathReplace(path.join(filepath, file)),
                         contentType
                     });
-                }                
+                }
             });
-        } else { 
+        } else {
             const contentType = mime.lookup(path.join(BASEPATH, filepath))
             if (contentType) {
                 assetsList.push({
@@ -53,7 +53,7 @@ const getAssets = async (path = '.') => {
                     contentType
                 });
             }
-                
+
         }
     }));
     return assetsList;
@@ -80,7 +80,8 @@ const uploadFile = async (source, destination, contentType, permissions) => {
     }).promise();
 };
 
-const uploadAll = async (path, permissions) => {  
+const uploadAll = async (args) => {
+    const permissions = args.isPublic ? 'public-read' : args.acl || 'private';
     const assets = await getAssets();
     await Promise.all(assets.map(asset => uploadFile(asset.source, asset.destination, asset.contentType, permissions)))
 };
@@ -100,43 +101,66 @@ const cloudfrontCacheInvalidation = async () => {
 
 const deploy = async () => {
     console.log(process)
-    
+
     const args = process.argv.slice(2);
+    const data = {};
+
+    const bucket = args.shift();
 
     args.forEach(arg => {
-	keyValue = arg.split('=');
+        keyValue = arg.split('=');
 
-	if 
-	switch (keyValue[0]) {
+        switch (keyValue[0]) {
+            case 'cfront':
+                data.cloudfrontId = keyValue[1]
+                break;
 
-	    case 'cloudfront
+            case 'bucket':
+                data.s3Bucket = keyValue[1]
+                break;
+
+            case 'title':
+                data.title = keyValue[1]
+                break;
+
+            case 'acl':
+                data.acl = keyValue[1]
+                break;
+
+            case '-p':
+                data.isPublic = true;
+                break;
 
             default:
-	        throw new Error(_usage());
-	}
+                throw new Error(_usage());
+        }
     });
 
-
-    const cloudfrontDistributionId = process.argv[2];
-    const s3Bucket = process.argv[3];
-    const deploymentTitle = process.argv[4]; 
-
-    if (!cloudfrontDistributionId || !s3Bucket || !deploymentTitle) {
+    if (!data.s3Bucket) {
         _usage();
         throw new Error('Incorrect usage of deploy.js');
     }
 
-    const permissions = process.argv.length == 5 && process.argv[5] === '--public' ? 'public-read' : process.argv[5] || 'private';
+    if (data.isPublic && data.acl) {
+        _usage();
+        throw new Error('Incorrect usage of deploy.js, cant use both -p flag and acl param');
+    }
 
-    console.log(`Deplying to S3 bucket: ${s3Bucket}`);
+    console.log(`Deplying to S3 bucket: ${data.s3Bucket}`);
     console.log('....................')
-    console.log('Uploading assets...') ;
+    console.log('Uploading assets...');
     console.log(`- Project basepath: ${BASEPATH}`);
-    await uploadAll(permissions);
-    console.log('Creating invalidation...');
-    console.log(`- Cloudfront distribution: ${cloudfrontDistributionId}`);    
-    const invalidation = await cloudfrontCacheInvalidation();        
-    console.log(`- Invalidation ID: ${invalidation.Invalidation.Id}`);
+
+    await uploadAll(data);
+
+    if (data.cloudfrontId) {
+        console.log('Creating invalidation...');
+        console.log(`- Cloudfront distribution: ${data.cloudfrontDistributionId}`);
+        const invalidation = await cloudfrontCacheInvalidation();
+        console.log(`- Invalidation ID: ${invalidation.Invalidation.Id}`);
+    }
+
+    console.log('Upload complete.')
 };
 
 deploy();

@@ -12,15 +12,25 @@ AWS_SECRET_ACCESS_KEY=""
 
 ## deploy.js
 
-Deploy all files in current directory to S3 using
+Deploy all files in current directory to S3 using the following 
 
-```node deploy <cloudfront-dist-id> <s3-bucket> <deployment-title>```
+```node deploy <s3-bucket> ```
 
-The default [ACL permissions](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html) is set to `private`. Specify public read rights using
+<cloudfront-dist-id> 
+<deployment-title>
 
-```node deploy <cloudfront-dist-id> <s3-bucket> <deployment-title> --public```
+The default [ACL permissions](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html) is set to `private`. Specify public read rights using `-p`
 
-Additionaly, specify custom Canned ACL permissions using (optional)
+Add deployment title
 
-```node deploy <cloudfront-dist-id> <s3-bucket> <deployment-title> <canned-acl>```
+```node deploy <s3-bucket> title=deploy-title  -p```
+
+Additionaly, specify custom Canned ACL permissions
+
+```node deploy <s3-bucket> acl=canned-acl```
+
+Invalidate cloudfront distributions using 
+
+```node deploy <s3-bucket> title=deploy-title cfront=cloudfront-id -p```
+
 
