@@ -116,23 +116,15 @@ const cloudfrontCacheInvalidation = async () => {
 };
 
 const deploy = async () => {
-  console.log(process);
-
   const args = process.argv.slice(2);
-  const data = {};
-
   const bucket = args.shift();
+  const data = {};
 
   args.forEach((arg) => {
     keyValue = arg.split('=');
-
     switch (keyValue[0]) {
       case 'cfront':
         data.cloudfrontId = keyValue[1];
-        break;
-
-      case 'bucket':
-        data.s3Bucket = keyValue[1];
         break;
 
       case 'title':
